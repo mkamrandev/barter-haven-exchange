@@ -11,8 +11,12 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+interface AuthState {
+  isAuthenticated: boolean;
+}
+
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth as AuthState);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
