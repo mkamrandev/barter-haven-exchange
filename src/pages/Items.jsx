@@ -1,5 +1,6 @@
+
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchItems } from '../redux/slices/itemsSlice';
 import { fetchCategories } from '../redux/slices/categoriesSlice';
@@ -121,6 +122,9 @@ const Items = () => {
       </div>
     );
   }
+
+  console.log('Total items available:', otherUsersItems?.length);
+  console.log('Filtered items:', filteredItems?.length);
 
   return (
     <Layout>

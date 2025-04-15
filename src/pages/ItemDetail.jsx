@@ -7,7 +7,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { fetchItemById } from '../redux/slices/itemsSlice';
 import Layout from '../components/layout/Layout';
-import { FaHeart, FaExchangeAlt, FaMapMarkerAlt, FaUser, FaCalendarAlt, FaArrowLeft } from 'react-icons/fa';
+import { FaHeart, FaExchangeAlt, FaMapMarkerAlt, FaUser, FaCalendarAlt, FaArrowLeft, FaStar, FaMapPin } from 'react-icons/fa';
 
 const ItemDetail = () => {
   const { id } = useParams();
@@ -47,6 +47,13 @@ const ItemDetail = () => {
   const handleOffer = () => {
     navigate(`/offer/${id}`);
   };
+
+  // Dummy reviews data
+  const reviews = [
+    { id: 1, user: 'John Doe', rating: 5, comment: 'Great item, exactly as described!', date: '2025-03-10' },
+    { id: 2, user: 'Jane Smith', rating: 4, comment: 'Good condition, fast exchange.', date: '2025-03-05' },
+    { id: 3, user: 'Mike Johnson', rating: 5, comment: 'Very satisfied with this trade.', date: '2025-02-28' },
+  ];
 
   if (!isAuthenticated) {
     return (
@@ -204,6 +211,121 @@ const ItemDetail = () => {
                         This is your item. You cannot make offers on your own items.
                       </div>
                     )}
+                  </div>
+                </div>
+
+                {/* Location Section */}
+                <div className="p-6 border-t border-gray-200">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-4">Item Location</h2>
+                  <div className="bg-gray-100 p-6 rounded-lg">
+                    <div className="flex items-start">
+                      <FaMapPin className="text-teal-500 text-2xl mr-4 mt-1" />
+                      <div>
+                        <h3 className="font-semibold text-gray-800 text-lg mb-2">Pickup Location</h3>
+                        <p className="text-gray-700 mb-2">{item.location}</p>
+                        <p className="text-gray-600">
+                          The exact meetup location will be arranged after the trade is agreed upon.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-4 bg-gray-200 h-48 rounded-lg flex items-center justify-center text-gray-500">
+                      Map placeholder - Location will be shown here
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reviews Section */}
+                <div className="p-6 border-t border-gray-200">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-4">Reviews</h2>
+                  
+                  {/* Review Summary */}
+                  <div className="bg-gray-100 p-4 rounded-lg mb-6 flex items-center">
+                    <div className="mr-4">
+                      <div className="text-4xl font-bold text-gray-800">4.7</div>
+                      <div className="flex text-yellow-400">
+                        <FaStar />
+                        <FaStar />
+                        <FaStar />
+                        <FaStar />
+                        <FaStar className="text-gray-300" />
+                      </div>
+                      <div className="text-sm text-gray-600">Based on {reviews.length} reviews</div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="mb-2">
+                        <div className="flex items-center">
+                          <div className="w-24 text-sm">5 stars</div>
+                          <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div className="bg-yellow-400 h-full" style={{ width: '70%' }}></div>
+                          </div>
+                          <div className="w-12 text-sm text-right">70%</div>
+                        </div>
+                      </div>
+                      <div className="mb-2">
+                        <div className="flex items-center">
+                          <div className="w-24 text-sm">4 stars</div>
+                          <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div className="bg-yellow-400 h-full" style={{ width: '20%' }}></div>
+                          </div>
+                          <div className="w-12 text-sm text-right">20%</div>
+                        </div>
+                      </div>
+                      <div className="mb-2">
+                        <div className="flex items-center">
+                          <div className="w-24 text-sm">3 stars</div>
+                          <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div className="bg-yellow-400 h-full" style={{ width: '10%' }}></div>
+                          </div>
+                          <div className="w-12 text-sm text-right">10%</div>
+                        </div>
+                      </div>
+                      <div className="mb-2">
+                        <div className="flex items-center">
+                          <div className="w-24 text-sm">2 stars</div>
+                          <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div className="bg-yellow-400 h-full" style={{ width: '0%' }}></div>
+                          </div>
+                          <div className="w-12 text-sm text-right">0%</div>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex items-center">
+                          <div className="w-24 text-sm">1 star</div>
+                          <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div className="bg-yellow-400 h-full" style={{ width: '0%' }}></div>
+                          </div>
+                          <div className="w-12 text-sm text-right">0%</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Reviews List */}
+                  <div className="space-y-6">
+                    {reviews.map(review => (
+                      <div key={review.id} className="border-b border-gray-200 pb-6 last:border-b-0">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex items-center">
+                            <div className="w-10 h-10 rounded-full bg-gray-200 mr-3 flex items-center justify-center">
+                              <FaUser className="text-gray-500" />
+                            </div>
+                            <div>
+                              <div className="font-medium text-gray-800">{review.user}</div>
+                              <div className="text-sm text-gray-500">{new Date(review.date).toLocaleDateString()}</div>
+                            </div>
+                          </div>
+                          <div className="flex text-yellow-400">
+                            {[...Array(5)].map((_, i) => (
+                              <FaStar 
+                                key={i} 
+                                className={i < review.rating ? "" : "text-gray-300"} 
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-gray-700">{review.comment}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
