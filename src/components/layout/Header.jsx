@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { FaUser, FaSignOutAlt, FaExchangeAlt, FaHome, FaPlus, FaHeart, FaTh, FaSearch, FaBars } from 'react-icons/fa';
+import { FaUser, FaSignOutAlt, FaExchangeAlt, FaBars, FaSearch } from 'react-icons/fa';
 import { logoutUser } from '../../redux/slices/authSlice';
 
 const Header = () => {
@@ -92,32 +92,9 @@ const Header = () => {
             </div>
           </form>
           
-          {/* Navigation for desktop */}
-          <nav className="hidden md:flex space-x-6">
-            <Link to="/" className="flex items-center hover:text-teal-600 transition-colors">
-              <FaHome className="mr-1" /> Home
-            </Link>
-            <Link to="/items" className="flex items-center hover:text-teal-600 transition-colors">
-              <FaTh className="mr-1" /> Browse Items
-            </Link>
-            {isAuthenticated && (
-              <>
-                <Link to="/profile" className="flex items-center hover:text-teal-600 transition-colors">
-                  <FaUser className="mr-1" /> Profile
-                </Link>
-                <Link to="/add-item" className="flex items-center hover:text-teal-600 transition-colors">
-                  <FaPlus className="mr-1" /> Add Item
-                </Link>
-                <Link to="/wishlist" className="flex items-center hover:text-teal-600 transition-colors">
-                  <FaHeart className="mr-1" /> Wishlist
-                </Link>
-              </>
-            )}
-          </nav>
-          
           {/* Mobile menu button */}
           <button 
-            className="md:hidden text-gray-700 focus:outline-none"
+            className="text-gray-700 focus:outline-none"
             onClick={() => setShowMobileMenu(!showMobileMenu)}
           >
             <FaBars size={24} />
@@ -128,22 +105,13 @@ const Header = () => {
         {showMobileMenu && (
           <nav className="md:hidden py-4 border-t border-gray-200">
             <div className="flex flex-col space-y-4">
-              <Link to="/" className="flex items-center hover:text-teal-600 transition-colors">
-                <FaHome className="mr-2" /> Home
-              </Link>
-              <Link to="/items" className="flex items-center hover:text-teal-600 transition-colors">
-                <FaTh className="mr-2" /> Browse Items
-              </Link>
-              {isAuthenticated && (
+              {isAuthenticated ? (
                 <>
                   <Link to="/profile" className="flex items-center hover:text-teal-600 transition-colors">
                     <FaUser className="mr-2" /> Profile
                   </Link>
-                  <Link to="/add-item" className="flex items-center hover:text-teal-600 transition-colors">
-                    <FaPlus className="mr-2" /> Add Item
-                  </Link>
-                  <Link to="/wishlist" className="flex items-center hover:text-teal-600 transition-colors">
-                    <FaHeart className="mr-2" /> Wishlist
+                  <Link to="/dashboard" className="flex items-center hover:text-teal-600 transition-colors">
+                    <FaUser className="mr-2" /> Dashboard
                   </Link>
                   <button 
                     onClick={handleLogout}
@@ -151,6 +119,15 @@ const Header = () => {
                   >
                     <FaSignOutAlt className="mr-2" /> Logout
                   </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className="flex items-center hover:text-teal-600 transition-colors">
+                    <FaUser className="mr-2" /> Login
+                  </Link>
+                  <Link to="/register" className="flex items-center hover:text-teal-600 transition-colors">
+                    <FaUser className="mr-2" /> Register
+                  </Link>
                 </>
               )}
             </div>

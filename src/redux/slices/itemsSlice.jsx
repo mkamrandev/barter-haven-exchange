@@ -16,14 +16,20 @@ export const fetchItems = createAsyncThunk(
   'items/fetchItems',
   async (_, { rejectWithValue, getState }) => {
     try {
+      console.log('Fetching all items...');
       const response = await axios.get('http://127.0.0.1:8000/api/items', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
       
+      console.log('Items API response:', response.data);
+      
       const userId = getState().auth.user?.id;
       const allItems = response.data.items || [];
+      
+      console.log('User ID:', userId);
+      console.log('All items count:', allItems.length);
       
       // Filter items based on user and approval status
       const userItems = allItems.filter(item => item.user_id === userId);
@@ -31,12 +37,16 @@ export const fetchItems = createAsyncThunk(
         item.user_id !== userId && item.is_Approved === 'approved'
       );
       
+      console.log('User items count:', userItems.length);
+      console.log('Other users items count:', otherUsersItems.length);
+      
       return {
         userItems,
         otherUsersItems,
         allItems
       };
     } catch (error) {
+      console.error('Error fetching items:', error);
       return rejectWithValue(error.response?.data || { message: 'Network error occurred' });
     }
   }

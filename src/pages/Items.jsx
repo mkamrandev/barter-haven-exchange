@@ -39,8 +39,16 @@ const Items = () => {
   }, [dispatch, isAuthenticated]);
 
   useEffect(() => {
-    if (otherUsersItems && otherUsersItems.length > 0) {
-      let filtered = [...otherUsersItems];
+    // Log what we're working with
+    console.log('Items from store:', items);
+    console.log('Other users items from store:', otherUsersItems);
+    
+    // Set initial items for display - using either otherUsersItems or items
+    const displayItems = otherUsersItems && otherUsersItems.length > 0 ? otherUsersItems : items;
+    console.log('Display items before filtering:', displayItems);
+    
+    if (displayItems && displayItems.length > 0) {
+      let filtered = [...displayItems];
       
       if (searchQuery) {
         filtered = filtered.filter(
@@ -70,11 +78,13 @@ const Items = () => {
           break;
       }
       
+      console.log('Filtered items after processing:', filtered);
       setFilteredItems(filtered);
     } else {
+      console.log('No items available for filtering');
       setFilteredItems([]);
     }
-  }, [otherUsersItems, searchQuery, selectedCategory, sortOption]);
+  }, [items, otherUsersItems, searchQuery, selectedCategory, sortOption]);
 
   const handleSearch = (e) => {
     e.preventDefault();
