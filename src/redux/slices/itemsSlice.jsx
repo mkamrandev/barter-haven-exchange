@@ -5,15 +5,16 @@ import axios from 'axios';
 const initialState = {
   items: [],
   userItems: [],
+  otherUsersItems: [],
   item: null,
   isLoading: false,
   error: null,
 };
 
-// Get all approved items
+// Get all items
 export const fetchItems = createAsyncThunk(
   'items/fetchItems',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
       const response = await axios.get('http://127.0.0.1:8000/api/items', {
         headers: {
@@ -21,9 +22,20 @@ export const fetchItems = createAsyncThunk(
         }
       });
       
-      // Filter only approved items
-      const approvedItems = response.data.items.filter(item => item.is_Approved === 'approved');
-      return { ...response.data, items: approvedItems };
+      const userId = getState().auth.user?.id;
+      const allItems = response.data.items;
+      
+      // Filter items based on user and approval status
+      const userItems = allItems.filter(item => item.user_id === userId);
+      const otherUsersItems = allItems.filter(item => 
+        item.user_id !== userId && item.is_Approved === 'approved'
+      );
+      
+      return {
+        userItems,
+        otherUsersItems,
+        allItems
+      };
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: 'Network error occurred' });
     }
@@ -35,11 +47,12 @@ export const fetchUserItems = createAsyncThunk(
   'items/fetchUserItems',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/User/items', {
+      const response = await axios.get('http://127.0.0.1:8000/api/items', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
+      
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: 'Network error occurred' });
@@ -84,7 +97,9 @@ const itemsSlice = createSlice({
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.items = action.payload.items;
+        state.items = action.payload.allItems;
+        state.userItems = action.payload.userItems;
+        state.otherUsersItems = action.payload.otherUsersItems;
       })
       .addCase(fetchItems.rejected, (state, action) => {
         state.isLoading = false;

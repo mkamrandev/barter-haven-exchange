@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,7 +12,7 @@ const Items = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
-  const { items, isLoading } = useSelector((state) => state.items);
+  const { otherUsersItems, isLoading } = useSelector((state) => state.items);
   const { categories } = useSelector((state) => state.categories);
   const { isAuthenticated } = useSelector((state) => state.auth);
 
@@ -39,8 +38,8 @@ const Items = () => {
   }, [dispatch, isAuthenticated]);
 
   useEffect(() => {
-    if (items) {
-      let filtered = [...items];
+    if (otherUsersItems) {
+      let filtered = [...otherUsersItems];
       
       if (searchQuery) {
         filtered = filtered.filter(
@@ -72,7 +71,7 @@ const Items = () => {
       
       setFilteredItems(filtered);
     }
-  }, [items, searchQuery, selectedCategory, sortOption]);
+  }, [otherUsersItems, searchQuery, selectedCategory, sortOption]);
 
   const handleSearch = (e) => {
     e.preventDefault();
