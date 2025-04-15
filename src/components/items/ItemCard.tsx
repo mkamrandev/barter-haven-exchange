@@ -22,11 +22,27 @@ interface ItemCardProps {
 }
 
 const ItemCard = ({ item }: ItemCardProps) => {
+  // Parse images array - handle both URL formats
+  const getImageUrl = () => {
+    try {
+      const parsedImages = JSON.parse(item.images);
+      // Handle both direct URLs and relative paths
+      if (parsedImages[0].startsWith('http')) {
+        return parsedImages[0];
+      } else {
+        return `http://127.0.0.1:8000/storage/${parsedImages[0]}`;
+      }
+    } catch (e) {
+      // Fallback to a placeholder if parsing fails
+      return 'https://via.placeholder.com/300';
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative">
         <img 
-          src={JSON.parse(item.images)[0]} 
+          src={getImageUrl()} 
           alt={item.title} 
           className="w-full h-48 object-cover"
         />

@@ -8,7 +8,6 @@ const initialState = {
   isAuthenticated: localStorage.getItem('token') ? true : false,
   isLoading: false,
   error: null,
-  fcm_token: null,
 };
 
 // Register user
@@ -40,9 +39,8 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/auth/login', credentials);
       
-      // Store token in localStorage
+      // Store token in localStorage - use access_token instead of fcm_token
       localStorage.setItem('token', response.data.access_token);
-      localStorage.setItem('fcm_token', response.data.fcm_token);
       
       // Set default axios authorization header
       axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
@@ -67,7 +65,6 @@ export const logoutUser = createAsyncThunk(
       
       // Remove token from localStorage
       localStorage.removeItem('token');
-      localStorage.removeItem('fcm_token');
       
       // Remove authorization header
       delete axios.defaults.headers.common['Authorization'];
@@ -99,7 +96,6 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user = action.payload.user;
         state.token = action.payload.access_token;
-        state.fcm_token = action.payload.fcm_token;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -116,7 +112,6 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user = action.payload.user;
         state.token = action.payload.access_token;
-        state.fcm_token = action.payload.fcm_token;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -132,7 +127,6 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.user = null;
         state.token = null;
-        state.fcm_token = null;
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.isLoading = false;

@@ -25,7 +25,7 @@ export const fetchItems = createAsyncThunk(
       const approvedItems = response.data.items.filter(item => item.is_Approved === 'approved');
       return { ...response.data, items: approvedItems };
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || { message: 'Network error occurred' });
     }
   }
 );
@@ -42,7 +42,7 @@ export const fetchUserItems = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || { message: 'Network error occurred' });
     }
   }
 );
@@ -59,7 +59,7 @@ export const fetchItemById = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || { message: 'Network error occurred' });
     }
   }
 );

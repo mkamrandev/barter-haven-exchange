@@ -36,7 +36,6 @@ const useAxiosInterceptor = () => {
         if (error.response && error.response.status === 401) {
           // Clear token and logout user
           localStorage.removeItem('token');
-          localStorage.removeItem('fcm_token');
           dispatch(logoutUser());
         }
         
