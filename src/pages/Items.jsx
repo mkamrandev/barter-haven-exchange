@@ -13,7 +13,7 @@ const Items = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
-  const { otherUsersItems, isLoading } = useSelector((state) => state.items);
+  const { items, otherUsersItems, isLoading } = useSelector((state) => state.items);
   const { categories } = useSelector((state) => state.categories);
   const { isAuthenticated } = useSelector((state) => state.auth);
 
@@ -39,7 +39,7 @@ const Items = () => {
   }, [dispatch, isAuthenticated]);
 
   useEffect(() => {
-    if (otherUsersItems) {
+    if (otherUsersItems && otherUsersItems.length > 0) {
       let filtered = [...otherUsersItems];
       
       if (searchQuery) {
@@ -71,6 +71,8 @@ const Items = () => {
       }
       
       setFilteredItems(filtered);
+    } else {
+      setFilteredItems([]);
     }
   }, [otherUsersItems, searchQuery, selectedCategory, sortOption]);
 

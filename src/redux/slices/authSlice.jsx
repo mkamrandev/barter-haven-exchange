@@ -57,11 +57,16 @@ export const logoutUser = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/logout', {}, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const token = localStorage.getItem('token');
+      
+      // Only make the API call if we have a token
+      if (token) {
+        await axios.post('http://127.0.0.1:8000/api/logout', {}, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      }
       
       // Remove token from localStorage
       localStorage.removeItem('token');
@@ -69,9 +74,14 @@ export const logoutUser = createAsyncThunk(
       // Remove authorization header
       delete axios.defaults.headers.common['Authorization'];
       
-      return response.data;
+      return { success: true };
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      console.error('Logout error:', error);
+      // Still remove token even if the API call fails
+      localStorage.removeItem('token');
+      delete axios.defaults.headers.common['Authorization'];
+      
+      return rejectWithValue(error.response?.data || { message: 'Logout failed' });
     }
   }
 );
@@ -128,9 +138,12 @@ const authSlice = createSlice({
         state.user = null;
         state.token = null;
       })
-      .addCase(logoutUser.rejected, (state, action) => {
+      .addCase(logoutUser.rejected, (state) => {
+        // Even if the API call fails, we still want to log the user out on the client side
         state.isLoading = false;
-        state.error = action.payload || { message: 'Logout failed' };
+        state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
       });
   },
 });

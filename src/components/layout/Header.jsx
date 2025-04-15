@@ -1,14 +1,16 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { FaUser, FaSignOutAlt, FaExchangeAlt, FaHome, FaPlus, FaHeart, FaTh } from 'react-icons/fa';
+import { FaUser, FaSignOutAlt, FaExchangeAlt, FaHome, FaPlus, FaHeart, FaTh, FaSearch, FaBars } from 'react-icons/fa';
 import { logoutUser } from '../../redux/slices/authSlice';
 
 const Header = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const handleLogout = () => {
     dispatch(logoutUser())
@@ -21,77 +23,139 @@ const Header = () => {
       });
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/items?search=${searchTerm}`);
+    }
+  };
+
   return (
-    <header className="bg-gradient-to-r from-teal-500 to-blue-600 text-white shadow-md">
+    <header className="bg-white text-gray-700 shadow-md">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center py-4">
-          {/* Logo and Name */}
-          <Link to="/" className="flex items-center">
-            <FaExchangeAlt className="text-2xl mr-2" />
-            <span className="text-xl font-bold">Barter Haven</span>
-          </Link>
-          
-          {/* Navigation */}
-          <nav className="hidden md:flex space-x-6">
-            <Link to="/" className="flex items-center hover:text-teal-100 transition-colors">
-              <FaHome className="mr-1" /> Home
-            </Link>
-            <Link to="/items" className="flex items-center hover:text-teal-100 transition-colors">
-              <FaTh className="mr-1" /> Browse Items
-            </Link>
-            <Link to="/dashboard" className="flex items-center hover:text-teal-100 transition-colors">
-              <FaUser className="mr-1" /> Dashboard
-            </Link>
-            <Link to="/add-item" className="flex items-center hover:text-teal-100 transition-colors">
-              <FaPlus className="mr-1" /> Add Item
-            </Link>
-            <Link to="/wishlist" className="flex items-center hover:text-teal-100 transition-colors">
-              <FaHeart className="mr-1" /> Wishlist
-            </Link>
-          </nav>
-          
-          {/* User Menu / Auth Buttons */}
-          <div className="flex items-center">
+        {/* Top navigation bar */}
+        <div className="py-2 border-b border-gray-200 flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <span className="text-sm">Download App</span>
+            <span className="text-sm">Sell on Barter Haven</span>
+          </div>
+          <div className="flex items-center space-x-4">
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
-                <Link to="/profile" className="flex items-center hover:text-teal-100 transition-colors">
-                  {user?.profile_picture ? (
-                    <img 
-                      src={`http://127.0.0.1:8000/storage/${user.profile_picture}`} 
-                      alt={user.username} 
-                      className="w-8 h-8 rounded-full mr-2 object-cover border-2 border-white"
-                    />
-                  ) : (
-                    <FaUser className="mr-2" />
-                  )}
-                  <span className="hidden lg:inline">{user?.username || 'Profile'}</span>
+                <Link to="/profile" className="text-sm hover:text-teal-600 transition-colors">
+                  Hi, {user?.username || 'User'}
                 </Link>
                 <button 
                   onClick={handleLogout}
-                  className="flex items-center hover:text-teal-100 transition-colors"
+                  className="text-sm hover:text-teal-600 transition-colors"
                 >
-                  <FaSignOutAlt className="mr-2" />
-                  <span className="hidden lg:inline">Logout</span>
+                  Logout
                 </button>
               </div>
             ) : (
               <div className="space-x-4">
-                <Link 
-                  to="/login" 
-                  className="px-4 py-2 bg-white text-teal-600 rounded-lg hover:bg-teal-50 transition-colors"
-                >
+                <Link to="/login" className="text-sm hover:text-teal-600 transition-colors">
                   Login
                 </Link>
-                <Link 
-                  to="/register" 
-                  className="px-4 py-2 border border-white text-white rounded-lg hover:bg-white/10 transition-colors hidden sm:inline-block"
-                >
+                <Link to="/register" className="text-sm hover:text-teal-600 transition-colors">
                   Register
                 </Link>
               </div>
             )}
           </div>
         </div>
+        
+        {/* Main navigation bar */}
+        <div className="py-4 flex flex-col md:flex-row justify-between items-center">
+          {/* Logo */}
+          <Link to="/" className="flex items-center mb-4 md:mb-0">
+            <FaExchangeAlt className="text-2xl text-teal-600 mr-2" />
+            <span className="text-xl font-bold text-teal-600">Barter Haven</span>
+          </Link>
+          
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="w-full md:w-1/2 mb-4 md:mb-0">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search for items..."
+                className="w-full py-2 px-4 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <button 
+                type="submit"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-teal-500"
+              >
+                <FaSearch />
+              </button>
+            </div>
+          </form>
+          
+          {/* Navigation for desktop */}
+          <nav className="hidden md:flex space-x-6">
+            <Link to="/" className="flex items-center hover:text-teal-600 transition-colors">
+              <FaHome className="mr-1" /> Home
+            </Link>
+            <Link to="/items" className="flex items-center hover:text-teal-600 transition-colors">
+              <FaTh className="mr-1" /> Browse Items
+            </Link>
+            {isAuthenticated && (
+              <>
+                <Link to="/profile" className="flex items-center hover:text-teal-600 transition-colors">
+                  <FaUser className="mr-1" /> Profile
+                </Link>
+                <Link to="/add-item" className="flex items-center hover:text-teal-600 transition-colors">
+                  <FaPlus className="mr-1" /> Add Item
+                </Link>
+                <Link to="/wishlist" className="flex items-center hover:text-teal-600 transition-colors">
+                  <FaHeart className="mr-1" /> Wishlist
+                </Link>
+              </>
+            )}
+          </nav>
+          
+          {/* Mobile menu button */}
+          <button 
+            className="md:hidden text-gray-700 focus:outline-none"
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+          >
+            <FaBars size={24} />
+          </button>
+        </div>
+        
+        {/* Mobile menu */}
+        {showMobileMenu && (
+          <nav className="md:hidden py-4 border-t border-gray-200">
+            <div className="flex flex-col space-y-4">
+              <Link to="/" className="flex items-center hover:text-teal-600 transition-colors">
+                <FaHome className="mr-2" /> Home
+              </Link>
+              <Link to="/items" className="flex items-center hover:text-teal-600 transition-colors">
+                <FaTh className="mr-2" /> Browse Items
+              </Link>
+              {isAuthenticated && (
+                <>
+                  <Link to="/profile" className="flex items-center hover:text-teal-600 transition-colors">
+                    <FaUser className="mr-2" /> Profile
+                  </Link>
+                  <Link to="/add-item" className="flex items-center hover:text-teal-600 transition-colors">
+                    <FaPlus className="mr-2" /> Add Item
+                  </Link>
+                  <Link to="/wishlist" className="flex items-center hover:text-teal-600 transition-colors">
+                    <FaHeart className="mr-2" /> Wishlist
+                  </Link>
+                  <button 
+                    onClick={handleLogout}
+                    className="flex items-center text-left hover:text-teal-600 transition-colors"
+                  >
+                    <FaSignOutAlt className="mr-2" /> Logout
+                  </button>
+                </>
+              )}
+            </div>
+          </nav>
+        )}
       </div>
     </header>
   );

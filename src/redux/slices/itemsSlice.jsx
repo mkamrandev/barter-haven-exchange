@@ -23,7 +23,7 @@ export const fetchItems = createAsyncThunk(
       });
       
       const userId = getState().auth.user?.id;
-      const allItems = response.data.items;
+      const allItems = response.data.items || [];
       
       // Filter items based on user and approval status
       const userItems = allItems.filter(item => item.user_id === userId);
@@ -113,7 +113,7 @@ const itemsSlice = createSlice({
       })
       .addCase(fetchUserItems.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.userItems = action.payload.items;
+        state.userItems = action.payload.items || [];
       })
       .addCase(fetchUserItems.rejected, (state, action) => {
         state.isLoading = false;
