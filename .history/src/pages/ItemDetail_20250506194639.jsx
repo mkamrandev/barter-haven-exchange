@@ -17,8 +17,7 @@ const ItemDetail = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const [images, setImages] = useState([]);
   console.log("item", item);
-  console.log("isAuthenticated", isAuthenticated);
-  console.log("user", user);
+  console.log()
 
   useEffect(() => {
     if (isAuthenticated && id) {

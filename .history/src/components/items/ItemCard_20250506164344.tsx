@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaHeart, FaEye } from 'react-icons/fa';
 
@@ -8,7 +7,7 @@ interface ItemCardProps {
     id: number;
     title: string;
     description: string;
-    images: string;
+    images: string; 
     category?: {
       name: string;
     };
@@ -22,25 +21,33 @@ interface ItemCardProps {
 }
 
 const ItemCard = ({ item }: ItemCardProps) => {
- 
-  const getImageUrl = () => {
-    try {
-      const parsedImages = JSON.parse(item.images); // Converts string to array
-      const cleanedUrl = parsedImages[0].replace(/\\/g, ''); // Remove backslashes
-      return cleanedUrl;
-    } catch (e) {
-      return 'https://via.placeholder.com/300';
-    }
-  };
+  const [imageUrl, setImageUrl] = useState<string>('https://via.placeholder.com/300');
   
+  useEffect(() => {
+    try {
+      // Parse the JSON string
+      const parsedImages = JSON.parse(item.images);
+      
+      // Check if we have valid image URLs
+      if (Array.isArray(parsedImages) && parsedImages.length > 0) {
+        // Remove any escaped quotes and slashes
+        const cleanedUrl = parsedImages[0].replace(/\\\//g, '/').replace(/"/g, '');
+        console.log('Image URL:', cleanedUrl); // Debug: check what URL is being used
+        setImageUrl(cleanedUrl);
+      }
+    } catch (error) {
+      console.error('Error parsing image URLs:', error, item.images);
+    }
+  }, [item.images]);
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative">
         <img 
-          src={getImageUrl()} 
+          src={imageUrl} 
           alt={item.title} 
           className="w-full h-48 object-cover"
+          onError={() => setImageUrl('https://via.placeholder.com/300')} // Fallback if image fails to load
         />
         <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">
           {item.category?.name}

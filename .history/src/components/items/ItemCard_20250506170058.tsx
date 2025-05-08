@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaHeart, FaEye } from 'react-icons/fa';
@@ -8,7 +7,7 @@ interface ItemCardProps {
     id: number;
     title: string;
     description: string;
-    images: string;
+    images: string; 
     category?: {
       name: string;
     };
@@ -22,17 +21,28 @@ interface ItemCardProps {
 }
 
 const ItemCard = ({ item }: ItemCardProps) => {
- 
+  // Direct approach to extract image URL
   const getImageUrl = () => {
     try {
-      const parsedImages = JSON.parse(item.images); // Converts string to array
-      const cleanedUrl = parsedImages[0].replace(/\\/g, ''); // Remove backslashes
-      return cleanedUrl;
+      // Try to extract the URL directly without JSON parsing
+      let match = item.images.match(/http[^"\\]+/);
+      if (match && match[0]) {
+        // Format the URL correctly, replacing escaped slashes
+        return match[0].replace(/\\\//g, '/');
+      }
+      
+      // Fallback to JSON parsing if regex doesn't work
+      const parsedImages = JSON.parse(item.images);
+      if (Array.isArray(parsedImages) && parsedImages.length > 0) {
+        return parsedImages[0].replace(/\\\//g, '/');
+      }
+      
+      return 'https://via.placeholder.com/300';
     } catch (e) {
+      console.error('Error processing image URL:', e);
       return 'https://via.placeholder.com/300';
     }
   };
-  
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
@@ -41,6 +51,11 @@ const ItemCard = ({ item }: ItemCardProps) => {
           src={getImageUrl()} 
           alt={item.title} 
           className="w-full h-48 object-cover"
+          onError={(e) => {
+            // If image fails to load, replace with placeholder and log the attempted URL
+            console.error('Failed to load image:', getImageUrl());
+            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300';
+          }}
         />
         <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">
           {item.category?.name}

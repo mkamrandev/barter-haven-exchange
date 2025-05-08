@@ -38,7 +38,6 @@ export const loginUser = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/auth/login', credentials);
-      console.log(response.data)
       
       // Store token in localStorage - use access_token instead of fcm_token
       localStorage.setItem('token', response.data.access_token);

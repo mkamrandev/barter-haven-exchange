@@ -22,17 +22,24 @@ interface ItemCardProps {
 }
 
 const ItemCard = ({ item }: ItemCardProps) => {
- 
+  // Parse images array - handle both URL formats
+  console.log("Item images:", item);
   const getImageUrl = () => {
     try {
-      const parsedImages = JSON.parse(item.images); // Converts string to array
-      const cleanedUrl = parsedImages[0].replace(/\\/g, ''); // Remove backslashes
-      return cleanedUrl;
+      const parsedImages = JSON.parse(item.images); // Correct: parse the whole string
+    if (parsedImages.length && parsedImages[0].startsWith('http')) {
+      return parsedImages[0];
+    } else {
+      return `http://127.0.0.1:8000/storage/${parsedImages[0]}`;
+    }
     } catch (e) {
+      // Fallback to a placeholder if parsing fails
       return 'https://via.placeholder.com/300';
     }
   };
+
   
+
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">

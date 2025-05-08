@@ -23,16 +23,6 @@ interface ItemCardProps {
 
 const ItemCard = ({ item }: ItemCardProps) => {
  
-  const getImageUrl = () => {
-    try {
-      const parsedImages = JSON.parse(item.images); // Converts string to array
-      const cleanedUrl = parsedImages[0].replace(/\\/g, ''); // Remove backslashes
-      return cleanedUrl;
-    } catch (e) {
-      return 'https://via.placeholder.com/300';
-    }
-  };
-  
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">

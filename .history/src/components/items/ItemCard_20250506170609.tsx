@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaHeart, FaEye } from 'react-icons/fa';
@@ -8,7 +7,7 @@ interface ItemCardProps {
     id: number;
     title: string;
     description: string;
-    images: string;
+    images: string; 
     category?: {
       name: string;
     };
@@ -22,17 +21,46 @@ interface ItemCardProps {
 }
 
 const ItemCard = ({ item }: ItemCardProps) => {
- 
+  // Backend URL - adjust this based on your Laravel configuration
+  const API_BASE_URL = 'http://127.0.0.1:8000';
+  
   const getImageUrl = () => {
     try {
-      const parsedImages = JSON.parse(item.images); // Converts string to array
-      const cleanedUrl = parsedImages[0].replace(/\\/g, ''); // Remove backslashes
-      return cleanedUrl;
+      const parsedImages = JSON.parse(item.images);
+      
+      if (Array.isArray(parsedImages) && parsedImages.length > 0) {
+        let imageUrl = parsedImages[0];
+        
+        // If the URL is already absolute (starts with http), use it as is
+        if (imageUrl.startsWith('http')) {
+          return imageUrl;
+        }
+        
+        // If it's a relative path, prefix it with the API base URL
+        // Remove leading slash if it exists
+        if (imageUrl.startsWith('/')) {
+          imageUrl = imageUrl.substring(1);
+        }
+        
+        return `${API_BASE_URL}/${imageUrl}`;
+      }
+      
+      return 'https://via.placeholder.com/300';
     } catch (e) {
+      console.error('Error parsing image URL:', e, item.images);
+      
+      // Try a direct approach - check if the image string contains a URL
+      if (typeof item.images === 'string' && item.images.includes('storage/uploads')) {
+        // Extract path from the string using regex
+        const match = item.images.match(/storage\/uploads\/[^"\\]+/);
+        if (match) {
+          return `${API_BASE_URL}/${match[0]}`;
+        }
+      }
+      
       return 'https://via.placeholder.com/300';
     }
   };
-  
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
@@ -41,6 +69,10 @@ const ItemCard = ({ item }: ItemCardProps) => {
           src={getImageUrl()} 
           alt={item.title} 
           className="w-full h-48 object-cover"
+          onError={(e) => {
+            console.error('Failed to load image:', getImageUrl());
+            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300';
+          }}
         />
         <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">
           {item.category?.name}
@@ -76,7 +108,7 @@ const ItemCard = ({ item }: ItemCardProps) => {
         <div className="flex items-center text-sm">
           {item.user?.profile_picture ? (
             <img 
-              src={`http://127.0.0.1:8000/storage/${item.user.profile_picture}`} 
+              src={`${API_BASE_URL}/storage/${item.user.profile_picture}`} 
               alt={item.user.username} 
               className="w-6 h-6 rounded-full mr-2 object-cover"
             />
